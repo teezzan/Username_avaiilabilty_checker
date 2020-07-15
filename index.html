@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+  </head>
+  <body>
+    <div>
+      <fieldset>
+        <label for="Fullname"
+          >Fullname: <br /><input id="Fullname" autocomplete="off" />
+        </label>
+        <br />
+        <label for="username"
+          >Username: <br /><input id="username" autocomplete="off" />
+          <p style="display: inline;" id="out"></p
+        ></label>
+
+        <br />
+        <label for="email"
+          >Email: <br /><input id="email" autocomplete="off"
+        /></label>
+
+        <br />
+        <label for="password"
+          >Password: <br />
+          <input id="password" type="password" autocomplete="off" /></label
+        ><br />
+      </fieldset>
+      <button onclick="register">Register</button>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+
+      function send(e) {
+        socket.emit("username_check", { username: e.target.value });
+      }
+      const Usernameinput = document.querySelector("#username");
+      Usernameinput.addEventListener("change", send);
+
+      socket.on("username_check", function (msg) {
+        const out = document.getElementById("out");
+        console.log(msg);
+        if (msg.available) {
+          out.textContent = "Username Available";
+        } else {
+          out.textContent = "Username Taken";
+        }
+      });
+      function register() {
+        var fullname = document.getElementById("Fullname").value;
+        var password = document.getElementById("password").value;
+        var username = document.getElementById("username").value;
+        var email = document.getElementById("email").value;
+
+        var payload = { name: fullname, password, username, email };
+        //send with axios
+        axios({
+          url: "localhost:4000/register",
+          data: payload,
+          method: "POST",
+        }).then((resp) => {
+          if (resp.data.status == "Success") {
+            alert("Success");
+          } else {
+            alert("Error");
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
